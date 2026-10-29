@@ -1,0 +1,6 @@
+.Stenoenv/
+__pycache__/
+*.pyc
+db.sqlite3
+media/
+staticfiles/

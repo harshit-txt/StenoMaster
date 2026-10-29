@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Practice - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Hello, {{ user.first_name|default:user.username }}</h1>
+      <p>Pick a set and start a dictation.</p>
+    </div>
+  </div>
+
+  {# ---- your numbers ---- #}
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="stat-value">{{ streak }} <small>day{{ streak|pluralize }}</small></div>
+      <div class="stat-label">Practice streak</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">{{ top_score|pct }}<small>%</small></div>
+      <div class="stat-label">Best accuracy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">{% if today_rank %}#{{ today_rank }} <small>of {{ today_participants }}</small>{% else %}-{% endif %}</div>
+      <div class="stat-label">{% if today_rank %}Today's rank by accuracy{% else %}Today's rank appears after your first submission{% endif %}</div>
+    </div>
+  </div>
+
+  {# ---- today's daily assignment (only shown when the admin has uploaded one for today) ---- #}
+  {% if todays_daily %}
+    <div class="daily-banner">
+      <p><strong>Today's daily dictation is ready:</strong> {{ todays_daily.display_title }} ({{ todays_daily.word_count }} words)</p>
+      <a class="btn btn-primary" href="{% url 'assignment' todays_daily.pk %}">Start today's dictation</a>
+    </div>
+  {% endif %}
+
+  {# ---- the three practice sets. EDIT titles / descriptions here ---- #}
+  <ul class="ruled">
+    <li>
+      <a href="{% url 'progressive' %}">
+        <span class="row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+        <div>
+          <h2>Progressive</h2>
+          <p>Build speed step by step. Start with the first set and move up as your accuracy improves.</p>
+        </div>
+        <div class="count">{{ count_progressive }}<small>dictation{{ count_progressive|pluralize }}</small></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'kailashchand' %}">
+        <span class="row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+        <div>
+          <h2>Kailashchandra</h2>
+          <p>Practice with Kailashchandra passages for advanced proficiency.</p>
+        </div>
+        <div class="count">{{ count_kailashchand }}<small>dictation{{ count_kailashchand|pluralize }}</small></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'short_dictation' %}">
+        <span class="row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
+        <div>
+          <h2>Short Dictation for Beginners</h2>
+          <p>Short passages to build speed and accuracy. Daily dictations are listed here too.</p>
+        </div>
+        <div class="count">{{ count_short }}<small>dictation{{ count_short|pluralize }}</small></div>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}

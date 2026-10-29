@@ -1,0 +1,35 @@
+{% load steno_extras %}{% comment %}
+  _assignment_list.html - the list of dictations on the Progressive / Kailashchandra / Short Dictation pages.
+  Needs "page" (a page of Assignment objects). Optional: empty_title, empty_text.
+  Colours of the "Best" badge: 95+ green, 90+ amber, below 90 red (EDIT below).
+{% endcomment %}
+{% if page.object_list %}
+  <ul class="assign-list">
+    {% for a in page %}
+      <li class="assign-item">
+        <div>
+          <h3>{{ a.display_title }}</h3>
+          <div class="assign-meta">
+            <span>{{ a.date|date:"j M Y" }}</span>
+            <span>{{ a.word_count }} words</span>
+            {% if a.category == 'daily' %}<span class="badge accent">Daily</span>{% endif %}
+            {% if a.attempts %}
+              <span class="badge {% if a.best >= 95 %}good{% elif a.best >= 90 %}ok{% else %}bad{% endif %}">Best {{ a.best|pct }}%</span>
+              <span>{{ a.attempts }} attempt{{ a.attempts|pluralize }}</span>
+            {% else %}
+              <span>Not attempted yet</span>
+            {% endif %}
+          </div>
+        </div>
+        <a class="btn btn-primary" href="{% url 'assignment' a.pk %}">{% if a.attempts %}Practice again{% else %}Start{% endif %}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% include '_pagination.html' %}
+{% else %}
+  <div class="empty">
+    <h3>{{ empty_title|default:"No dictations here yet" }}</h3>
+    <p>{{ empty_text|default:"New dictations appear here as soon as the admin uploads them." }}</p>
+    <a class="btn" href="{% url 'practice' %}">Back to practice</a>
+  </div>
+{% endif %}

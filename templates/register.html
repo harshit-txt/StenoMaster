@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Create an account - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h1>Create an account</h1>
+  <p class="auth-sub">Your phone number and password are what you will log in with.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+    {# No role / email field on purpose: everyone who registers here is a student. #}
+    {% include '_field.html' with field=form.full_name %}
+    {% include '_field.html' with field=form.username %}
+    {% include '_field.html' with field=form.phone %}
+    {% include '_field.html' with field=form.password password=True %}
+    {% include '_field.html' with field=form.confirm_password password=True %}
+
+    {# EDIT: this notice tells students the admin can look up their password #}
+    <p class="notice">The admin can look up your password if you forget it. Do not reuse a password from your email, bank or social media.</p>
+
+    <button type="submit" class="btn btn-primary btn-lg btn-block">Create account</button>
+  </form>
+
+  <p class="auth-switch">Already registered? <a href="{% url 'login' %}">Log in</a></p>
+
+  <div class="contact-box">
+    <p><strong>Contact admin: <a href="tel:{{ ADMIN_PHONE_TEL }}">{{ ADMIN_PHONE }}</a></strong></p>
+    <p class="muted">{{ ADMIN_CONTACT_MESSAGE }}</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Admin - {{ SITE_NAME }}{% endblock %}
+{% block nav_admin %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Admin</h1>
+      <p>Upload dictations, look up students and their passwords, and see the latest submissions.</p>
+    </div>
+    <div class="row">
+      <a class="btn" href="{% url 'owner_students' %}">Students and passwords</a>
+      <a class="btn btn-primary" href="{% url 'upload_assignment' %}">Upload assignment</a>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat"><div class="stat-value">{{ student_count }}</div><div class="stat-label">Students</div></div>
+    <div class="stat"><div class="stat-value">{{ assignment_count }}</div><div class="stat-label">Assignments</div></div>
+    <div class="stat"><div class="stat-value">{{ submission_count }}</div><div class="stat-label">Submissions</div></div>
+    <div class="stat"><div class="stat-value">{{ today_count }}</div><div class="stat-label">Submitted today</div></div>
+  </div>
+
+  {# ---- latest submissions ---- #}
+  <section class="section">
+    <h2>Latest submissions</h2>
+    {% if recent %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Student</th><th>Assignment</th><th class="num">Accuracy</th><th class="num">Mistakes</th><th>When</th><th></th></tr></thead>
+          <tbody>
+            {% for s in recent %}
+              <tr>
+                <td>{{ s.student.first_name|default:s.student.username }}<br><span class="muted small">{{ s.student.profile.phone|phone_fmt }}</span></td>
+                <td>{{ s.assignment.display_title }}</td>
+                <td class="num"><span class="badge {% if s.accuracy >= 95 %}good{% elif s.accuracy >= 90 %}ok{% else %}bad{% endif %}">{{ s.accuracy|pct }}%</span></td>
+                <td class="num">{{ s.mistake_count|num }}</td>
+                <td class="nowrap">{{ s.submitted_at|date:"j M, g:i a" }}</td>
+                <td class="actions"><a class="btn btn-sm" href="{% url 'view_submission' s.pk %}">View</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty"><h3>No submissions yet</h3><p>Submissions appear here as soon as students finish a dictation.</p></div>
+    {% endif %}
+  </section>
+
+  {# ---- all assignments (edit / delete) ---- #}
+  <section class="section">
+    <h2>Assignments</h2>
+    {% if page.object_list %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Title</th><th>Category</th><th>Date</th><th class="num">Words</th><th class="num">Attempts</th><th></th></tr></thead>
+          <tbody>
+            {% for a in page %}
+              <tr>
+                <td>{{ a.display_title }}{% if not a.audio_file %} <span class="badge bad">No audio</span>{% endif %}{% if a.strokes_pdf %} <span class="badge">Strokes PDF</span>{% endif %}</td>
+                <td>{{ a.get_category_display }}</td>
+                <td class="nowrap">{{ a.date|date:"j M Y" }}</td>
+                <td class="num">{{ a.word_count }}</td>
+                <td class="num">{{ a.attempts }}</td>
+                <td class="actions">
+                  <a class="btn btn-sm" href="{% url 'edit_assignment' a.pk %}">Edit</a>
+                  {# deleting also removes its submissions, so the browser asks first (data-confirm, see main.js) #}
+                  <form method="post" action="{% url 'delete_assignment' a.pk %}" style="display:inline" data-confirm="Delete this assignment and all its submissions? This cannot be undone.">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include '_pagination.html' %}
+    {% else %}
+      <div class="empty"><h3>No assignments yet</h3><p>Upload the first dictation so students can start practising.</p><a class="btn btn-primary" href="{% url 'upload_assignment' %}">Upload assignment</a></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

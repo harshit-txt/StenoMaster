@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Log in - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h1>Log in</h1>
+  <p class="auth-sub">Use your phone number and password.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+
+    {# wrong password / too many attempts message #}
+    {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+    {# The field is called "identifier": a phone number, or a username (the admin can use either). #}
+    {% include '_field.html' with field=form.identifier %}
+    {% include '_field.html' with field=form.password password=True %}
+
+    <button type="submit" class="btn btn-primary btn-lg btn-block">Log in</button>
+  </form>
+
+  <p class="auth-switch">New here? <a href="{% url 'register' %}">Create an account</a></p>
+
+  {# EDIT: the contact message comes from settings.py (ADMIN_CONTACT_PHONE / ADMIN_CONTACT_MESSAGE) #}
+  <div class="contact-box">
+    <p><strong>Contact admin: <a href="tel:{{ ADMIN_PHONE_TEL }}">{{ ADMIN_PHONE }}</a></strong></p>
+    <p class="muted">{{ ADMIN_CONTACT_MESSAGE }}</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% comment %}
+  _field.html - one form field: label + input + help text + errors.
+  Use:  {% include '_field.html' with field=form.username %}
+        {% include '_field.html' with field=form.password password=True %}   (adds a Show/Hide button)
+{% endcomment %}
+<div class="field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% if password %}
+    <div class="pw-wrap">{{ field }}<button type="button" data-toggle-password>Show</button></div>
+  {% else %}
+    {{ field }}
+  {% endif %}
+  {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+  {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+</div>

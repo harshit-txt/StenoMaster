@@ -1,0 +1,29 @@
+{% load steno_extras %}{% comment %}
+  _scores.html - the row of result numbers. Needs "sub" (a Submission) and "limits".
+  EDIT the good / ok / bad colour thresholds below (95 and 90).
+{% endcomment %}
+<div class="score-grid">
+  <div class="score big">
+    <div class="score-value {% if sub.accuracy >= 95 %}tone-good{% elif sub.accuracy >= 90 %}tone-ok{% else %}tone-bad{% endif %}">{{ sub.accuracy|pct }}%</div>
+    <div class="score-label">Accuracy</div>
+  </div>
+  <div class="score big">
+    <div class="score-value">{{ sub.mistake_count|num }}</div>
+    <div class="score-label">Mistakes in {{ sub.total_words }} words</div>
+  </div>
+  <div class="score"><div class="score-value">{{ sub.wrong_count }}</div><div class="score-label">Wrong words</div></div>
+  <div class="score"><div class="score-value">{{ sub.missing_count }}</div><div class="score-label">Missing words</div></div>
+  <div class="score"><div class="score-value">{{ sub.extra_count }}</div><div class="score-label">Extra words</div></div>
+  <div class="score"><div class="score-value">{{ sub.spelling_count }}</div><div class="score-label">Spelling (half each)</div></div>
+  <div class="score"><div class="score-value">{{ sub.capital_count }}</div><div class="score-label">Capitals (half each)</div></div>
+  <div class="score"><div class="score-value">{{ sub.punct_count }}</div><div class="score-label">Full stops (half each)</div></div>
+  <div class="score"><div class="score-value">{{ sub.typed_words }}</div><div class="score-label">Words typed</div></div>
+  <div class="score"><div class="score-value">{{ sub.wpm_used }}</div><div class="score-label">Dictation WPM</div></div>
+  <div class="score"><div class="score-value">{{ sub.time_taken|mmss }}</div><div class="score-label">Time taken</div></div>
+</div>
+<div class="limits">
+  <span class="badge">Mistake rate {{ sub.error_pct|pct }}%</span>
+  {% for limit, passed in limits %}
+    <span class="badge {% if passed %}good{% else %}bad{% endif %}">{% if passed %}Within{% else %}Over{% endif %} the {{ limit|num }}% limit</span>
+  {% endfor %}
+</div>

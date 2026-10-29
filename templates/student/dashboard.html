@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Dashboard - {{ SITE_NAME }}{% endblock %}
+{% block nav_dashboard %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Your recent sessions and how your accuracy is moving.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'practice' %}">Start practice</a>
+  </div>
+
+  {% if attempts %}
+    <div class="stat-strip">
+      <div class="stat"><div class="stat-value">{{ attempts }}</div><div class="stat-label">Sessions completed</div></div>
+      <div class="stat"><div class="stat-value">{{ avg_accuracy|pct }}<small>%</small></div><div class="stat-label">Average accuracy</div></div>
+      <div class="stat"><div class="stat-value">{{ best_accuracy|pct }}<small>%</small></div><div class="stat-label">Best accuracy</div></div>
+      <div class="stat"><div class="stat-value">{{ streak }} <small>day{{ streak|pluralize }}</small></div><div class="stat-label">Practice streak</div></div>
+      <div class="stat"><div class="stat-value">{{ total_minutes }} <small>min</small></div><div class="stat-label">Time spent typing</div></div>
+    </div>
+
+    {# accuracy of the last 20 sessions, drawn by static/js/main.js from the numbers below #}
+    {% if trend|length > 1 %}
+      <div class="trend">
+        <h2>Accuracy over your last {{ trend|length }} sessions</h2>
+        <div id="trend-chart" role="img" aria-label="Line chart of your accuracy over recent sessions"></div>
+        {{ trend|json_script:"trend-data" }}
+      </div>
+    {% endif %}
+
+    <section class="section">
+      <h2>Recent sessions</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Dictation</th><th>Date</th><th class="num">Accuracy</th><th class="num">Mistakes</th><th class="num">Speed</th><th class="num">Time</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for s in page %}
+              <tr>
+                <td><a href="{% url 'result' s.pk %}">{{ s.assignment.display_title }}</a></td>
+                <td class="nowrap">{{ s.submitted_at|date:"j M Y, g:i a" }}</td>
+                <td class="num"><span class="badge {% if s.accuracy >= 95 %}good{% elif s.accuracy >= 90 %}ok{% else %}bad{% endif %}">{{ s.accuracy|pct }}%</span></td>
+                <td class="num">{{ s.mistake_count|num }}</td>
+                <td class="num">{{ s.wpm_used }} WPM</td>
+                <td class="num">{{ s.time_taken|mmss }}</td>
+                <td class="actions"><a class="btn btn-sm" href="{% url 'result' s.pk %}">View result</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include '_pagination.html' %}
+    </section>
+  {% else %}
+    <div class="empty">
+      <h3>No sessions yet</h3>
+      <p>Finish your first dictation and your results will show up here.</p>
+      <a class="btn btn-primary" href="{% url 'practice' %}">Start practice</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

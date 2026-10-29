@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Weak words - {{ SITE_NAME }}{% endblock %}
+{% block nav_weak %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Weak words</h1>
+      <p>Words you typed wrongly or misspelled. Missing words, extra words, capitals and full stops are not listed here.</p>
+    </div>
+  </div>
+
+  {% if page.object_list %}
+    <div class="stat-strip" style="margin-bottom:20px">
+      <div class="stat"><div class="stat-value">{{ total_words }}</div><div class="stat-label">Different words</div></div>
+      <div class="stat"><div class="stat-value">{{ total_misses }}</div><div class="stat-label">Times missed in total</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th class="num">#</th><th>Word</th><th class="num">Times missed</th><th>Last missed</th></tr></thead>
+        <tbody>
+          {% for w in page %}
+            <tr>
+              <td class="num muted">{{ offset|add:forloop.counter }}</td>
+              <td><strong>{{ w.word }}</strong></td>
+              <td class="num"><span class="badge {% if w.miss_count >= 3 %}bad{% else %}ok{% endif %}">{{ w.miss_count }}</span></td>
+              <td class="muted">{{ w.last_seen|date:"j M Y" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include '_pagination.html' %}
+  {% else %}
+    <div class="empty">
+      <h3>No weak words yet</h3>
+      <p>Words you mistype will be listed here after you submit your first dictation.</p>
+      <a class="btn btn-primary" href="{% url 'practice' %}">Start practice</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

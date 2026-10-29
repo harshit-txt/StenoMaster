@@ -1,0 +1,8 @@
+{% comment %} Previous / Next buttons. Needs the variable "page". Keeps the search text "q" if there is one. {% endcomment %}
+{% if page.has_other_pages %}
+  <nav class="pagination" aria-label="Pages">
+    {% if page.has_previous %}<a class="btn btn-sm" href="?{% if q %}q={{ q|urlencode }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a class="btn btn-sm" href="?{% if q %}q={{ q|urlencode }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+  </nav>
+{% endif %}

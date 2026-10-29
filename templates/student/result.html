@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Result - {{ assignment.display_title }} - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>{{ assignment.display_title }}</h1>
+      <p>Submitted {{ sub.submitted_at|date:"j M Y, g:i a" }}</p>
+    </div>
+    <div class="row">
+      <a class="btn" href="{% url 'assignment' assignment.pk %}">Try again</a>
+      <a class="btn btn-primary" href="{% url 'practice' %}">Back to practice</a>
+    </div>
+  </div>
+
+  {% include '_scores.html' %}
+
+  {# ---- the marked-up passage ---- #}
+  <section class="section">
+    <h2>Your transcript</h2>
+    <div class="legend">
+      <span class="diff-text"><span class="w d-wrong"><span class="d-typed">typed</span><span class="d-fix">correct</span></span></span><span>Wrong word</span>
+      <span class="diff-text"><span class="w d-spelling"><span class="d-typed">typed</span><span class="d-fix">correct</span></span></span><span>Spelling, capital or full stop (half)</span>
+      <span class="diff-text"><span class="w d-missing"><span class="d-fix">word</span></span></span><span>Missing word</span>
+      <span class="diff-text"><span class="w d-extra"><span class="d-typed">word</span></span></span><span>Extra word</span>
+    </div>
+    <div class="diff-panel">
+      {% include '_diff.html' %}
+    </div>
+  </section>
+
+  {# ---- strokes PDF for this passage (only if the admin uploaded one) ---- #}
+  {% if strokes_url %}
+    <section class="section">
+      <div class="page-head">
+        <h2>Stroke Techniques &amp; Expert Joinings</h2>
+        <a class="btn" href="{{ strokes_url }}" target="_blank" rel="noopener">Open in a new tab</a>
+      </div>
+      <iframe class="pdf-frame" src="{{ strokes_url }}" title="Strokes PDF for this passage"></iframe>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

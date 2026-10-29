@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ SITE_NAME }} - Stenography dictation practice{% endblock %}
+
+{% block content %}
+{# ================= HERO: headline + a real marked-up sample ================= #}
+<section class="hero">
+  <div>
+    <h1>Type what you hear. See exactly what you missed.</h1>
+    <p class="lead">Dictation practice with word-by-word marking. Listen at your own speed, type for 50 minutes, then read your transcript back with every mistake marked in red pen.</p>
+    <div class="row">
+      <a class="btn btn-primary btn-lg" href="{% url 'register' %}">Create an account</a>
+      <a class="btn btn-lg" href="{% url 'login' %}">Log in</a>
+    </div>
+  </div>
+
+  {# EDIT: sample sentence. It uses the same classes as the real result page (d-wrong, d-spelling, d-missing ...) #}
+  <figure class="sample" aria-label="Example of a marked transcript" style="margin:0">
+    <div class="diff-text">
+      <span class="w">The</span>
+      <span class="w d-wrong"><span class="d-typed">suggestion</span><span class="d-fix">situation</span></span>
+      <span class="w">contemplated in Rule 5 has not</span>
+      <span class="w d-spelling"><span class="d-typed">arised</span><span class="d-fix">arisen</span></span>
+      <span class="w">and it will</span>
+      <span class="w d-missing"><span class="d-fix">not</span></span>
+      <span class="w">apply.</span>
+    </div>
+    <p class="sample-note">Two full mistakes and one half mistake: 2.5 mistakes in 14 words. Red is a full mistake, amber is a half mistake, and the green box is what the passage says.</p>
+  </figure>
+</section>
+
+{# ================= FEATURES ================= #}
+<section aria-labelledby="features-h">
+  <h2 id="features-h">Everything a dictation session needs</h2>
+  <div class="features">
+    <div class="feature">
+      <h3>Listen at your speed</h3>
+      <p>Play each dictation at 60 to 120 words a minute. The same recording runs faster or slower without changing the voice.</p>
+    </div>
+    <div class="feature">
+      <h3>Exam-style timing</h3>
+      <p>Five minutes to read your notes, then 50 minutes on the typing pad. The clock keeps running if you refresh, and your text is submitted when it reaches zero.</p>
+    </div>
+    <div class="feature">
+      <h3>Marked like the real test</h3>
+      <p>Missing, added and wrong words are full mistakes. Spelling, singular and plural slips, capitals and full stops are half mistakes.</p>
+    </div>
+    <div class="feature">
+      <h3>Weak words</h3>
+      <p>Every word you mistype goes on your list, with the number of times it has tripped you up.</p>
+    </div>
+    <div class="feature">
+      <h3>Stroke Techniques &amp; Expert Joinings</h3>
+      <p>After you submit, open the model strokes for that passage and compare them with your own notes.</p>
+    </div>
+    <div class="feature">
+      <h3>Practice sets</h3>
+      <p>Progressive, Kailashchandra and short dictation for beginners, each with your best score beside it.</p>
+    </div>
+  </div>
+</section>
+
+{# ================= HOW IT WORKS (a real sequence, so numbered) ================= #}
+<section class="section" aria-labelledby="how-h">
+  <h2 id="how-h">How a session runs</h2>
+  <ol class="steps">
+    <li><strong>Listen</strong><span>Play the dictation and write your notes.</span></li>
+    <li><strong>Read</strong><span>Five minutes to go over your notes.</span></li>
+    <li><strong>Type</strong><span>Transcribe on the pad before the 50 minutes end.</span></li>
+    <li><strong>Review</strong><span>See every mistake, then the model strokes.</span></li>
+  </ol>
+</section>
+
+<section class="cta-band">
+  <h2>Ready for your first dictation?</h2>
+  <a class="btn btn-primary btn-lg" href="{% url 'register' %}">Create an account</a>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Submission - {{ student.first_name|default:student.username }} - {{ SITE_NAME }}{% endblock %}
+{% block nav_admin %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>{{ assignment.display_title }}</h1>
+      <p>Submitted by <strong>{{ student.first_name|default:student.username }}</strong>
+        ({{ student.profile.phone|phone_fmt|default:student.username }}) on {{ sub.submitted_at|date:"j M Y, g:i a" }}</p>
+    </div>
+    <a class="btn" href="{% url 'owner_dashboard' %}">Back to admin</a>
+  </div>
+
+  {% include '_scores.html' %}
+
+  <section class="section">
+    <h2>Marked transcript</h2>
+    <div class="diff-panel">
+      {% include '_diff.html' %}
+    </div>
+  </section>
+
+  <details class="fold">
+    <summary>Show exactly what the student typed</summary>
+    <div class="typed-box">{{ sub.typed_text }}</div>
+  </details>
+</div>
+{% endblock %}

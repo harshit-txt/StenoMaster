@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{% if editing %}Edit assignment{% else %}Upload assignment{% endif %} - {{ SITE_NAME }}{% endblock %}
+{% block nav_upload %}{% if not editing %}is-active{% endif %}{% endblock %}
+{% block nav_admin %}{% if editing %}is-active{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page narrow">
+  <div class="page-head">
+    <div>
+      <h1>{% if editing %}Edit assignment{% else %}Upload assignment{% endif %}</h1>
+      <p>Paste the exact passage that is dictated and add its audio. Word count is worked out for you.</p>
+    </div>
+    <a class="btn" href="{% url 'owner_dashboard' %}">Back to admin</a>
+  </div>
+
+  {# multipart/form-data is required for the file uploads #}
+  <form method="post" enctype="multipart/form-data" class="panel" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+    <div class="form-grid">
+      {# EDIT: category list is in core/models.py (Assignment.CATEGORY_CHOICES) #}
+      {% include '_field.html' with field=form.category %}
+      {% include '_field.html' with field=form.date %}
+      <div class="full">{% include '_field.html' with field=form.title %}</div>
+
+      <div class="full">
+        {% include '_field.html' with field=form.paragraph_text %}
+        <p class="word-count-note" style="margin-top:-8px">
+          <span id="word-count">0</span> words. Spaces before commas or full stops do not matter; the checker ignores them.
+        </p>
+      </div>
+
+      <div class="full">
+        <div class="field">
+          <label for="{{ form.audio_file.id_for_label }}">{{ form.audio_file.label }}</label>
+          {% if editing and editing.audio_file %}<span class="current-file">Current file: {{ editing.audio_file.name }}. Choose a new file only to replace it.</span>{% endif %}
+          {{ form.audio_file }}
+          {% for error in form.audio_file.errors %}<div class="error">{{ error }}</div>{% endfor %}
+          <div class="help">MP3 plays in every browser and phone. .ogg does not play in some browsers.</div>
+        </div>
+      </div>
+
+      {% include '_field.html' with field=form.base_wpm %}
+
+      <div class="full">
+        <div class="field">
+          <label for="{{ form.strokes_pdf.id_for_label }}">{{ form.strokes_pdf.label }}</label>
+          {% if editing and editing.strokes_pdf %}
+            <span class="current-file">Current file: {{ editing.strokes_pdf.name }}. Choose a new file only to replace it.</span>
+            <label class="checkline" style="font-weight:400;margin-bottom:8px">{{ form.remove_strokes }} {{ form.remove_strokes.label }}</label>
+          {% endif %}
+          {{ form.strokes_pdf }}
+          {% for error in form.strokes_pdf.errors %}<div class="error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button type="submit" class="btn btn-primary btn-lg">{% if editing %}Save changes{% else %}Upload assignment{% endif %}</button>
+      <a class="btn btn-lg" href="{% url 'owner_dashboard' %}">Cancel</a>
+    </div>
+    {% if editing %}<p class="small muted" style="margin:14px 0 0">Old submissions keep the marks they already got, even if you change the paragraph text.</p>{% endif %}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load steno_extras %}
+{% block title %}Students and passwords - {{ SITE_NAME }}{% endblock %}
+{% block nav_students %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Students and passwords</h1>
+      <p>Search by name, username or phone number. Use two words together (for example a name and part of the number) to narrow it down.</p>
+    </div>
+    <button type="button" class="btn" id="pw-show-all">Show all passwords</button>
+  </div>
+
+  <form method="get" class="search-bar" role="search">
+    <label for="q" class="sr-only">Search students</label>
+    <input class="input" type="search" id="q" name="q" value="{{ q }}" placeholder="Name, username or phone number" autofocus>
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% if q %}<a class="btn" href="{% url 'owner_students' %}">Clear</a>{% endif %}
+  </form>
+
+  <p class="muted small">{{ total }} student{{ total|pluralize }}{% if q %} found for "{{ q }}"{% endif %}.</p>
+
+  {% if page.object_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>Name</th><th>Username</th><th>Phone</th><th>Password</th><th class="num">Sessions</th><th class="num">Best</th><th>Last active</th></tr>
+        </thead>
+        <tbody>
+          {% for p in page %}
+            <tr>
+              <td><strong>{{ p.user.first_name|default:"-" }}</strong></td>
+              <td>{{ p.user.username }}</td>
+              <td class="nowrap">{{ p.phone|phone_fmt|default:"-" }}</td>
+              <td class="nowrap">
+                {% if p.plain_password %}
+                  {# Passwords are hidden until you press Show (so nobody reads them over your shoulder). #}
+                  <code class="pw" data-pw="{{ p.plain_password }}">••••••</code>
+                  <button type="button" class="link-btn-inline" data-pw-toggle>Show</button>
+                {% else %}
+                  <span class="muted">Not stored</span>
+                {% endif %}
+              </td>
+              <td class="num">{{ p.attempts }}</td>
+              <td class="num">{% if p.best is not None %}{{ p.best|pct }}%{% else %}-{% endif %}</td>
+              <td class="nowrap muted">{% if p.last_active %}{{ p.last_active|date:"j M Y" }}{% else %}Never{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include '_pagination.html' %}
+  {% else %}
+    <div class="empty"><h3>No students found</h3><p>{% if q %}Try fewer words, or just part of the phone number.{% else %}Students appear here after they register.{% endif %}</p></div>
+  {% endif %}
+</div>
+{% endblock %}

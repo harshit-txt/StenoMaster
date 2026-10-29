@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Short Dictation for Beginners - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Short Dictation for Beginners</h1>
+      <p>Short passages to build speed and accuracy. Daily dictations, including older ones, are listed here too.</p>
+    </div>
+    <a class="btn" href="{% url 'practice' %}">Back to practice</a>
+  </div>
+  {% include 'student/_assignment_list.html' with empty_title="No short dictations yet" %}
+</div>
+{% endblock %}

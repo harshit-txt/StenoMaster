@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Not allowed - {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="code">403</div>
+  <h1>You can't open this page</h1>
+  <p class="muted">This page is only for the admin.</p>
+  <a class="btn btn-primary" href="{% url 'landing' %}">Go to home</a>
+</div>
+{% endblock %}

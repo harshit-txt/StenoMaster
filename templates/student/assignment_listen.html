@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Listen - {{ assignment.display_title }} - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  {# STEP 1 of 3. The behaviour (speed slider, auto-redirect) is in static/js/assignment.js #}
+  <div class="flow-steps" aria-label="Steps"><span class="on">1 Listen</span><span>2 Read your notes</span><span>3 Type</span></div>
+
+  <div class="page-head">
+    <div>
+      <h1>{{ assignment.display_title }}</h1>
+      <p>{{ assignment.word_count }} words. Pick a speed first, then press play and write your notes. The speed is locked once the audio starts. The reading page opens a few seconds after the audio ends.</p>
+    </div>
+  </div>
+
+  {% if audio_url %}
+    <div class="player" id="player"
+         data-assignment="{{ assignment.pk }}"
+         data-base-wpm="{{ assignment.base_wpm }}"
+         data-wpm-min="{{ wpm_min }}"
+         data-wpm-max="{{ wpm_max }}"
+         data-redirect-seconds="{{ redirect_seconds }}"
+         data-next-url="{% url 'assignment_reading' assignment.pk %}">
+
+      <audio id="audio" preload="auto" src="{{ audio_url }}"></audio>
+
+      <div class="player-main">
+        <button type="button" class="play-btn" id="play-btn" aria-label="Play">
+          <svg class="i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+        </button>
+        <div class="progress-col">
+          <div class="bar" id="bar" role="progressbar" aria-label="Audio progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="bar-fill"></i></div>
+          <div class="times"><span id="time-cur">0:00</span><span id="time-total">0:00</span></div>
+        </div>
+        {# "Start again": goes back to 0:00 and unlocks the speed slider (handled in assignment.js) #}
+        <button type="button" class="btn restart-btn" id="restart-btn" title="Start the dictation again from the beginning">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+          Start again
+        </button>
+      </div>
+
+      <div class="speed" id="speed-box">
+        <div class="speed-head">
+          <label for="wpm-range"><strong>Dictation speed</strong></label>
+          <span class="speed-value"><span id="wpm-value">{{ assignment.base_wpm }}</span> WPM</span>
+        </div>
+        <input type="range" id="wpm-range" min="{{ wpm_min }}" max="{{ wpm_max }}" step="5" value="{{ assignment.base_wpm }}">
+        <div class="speed-scale"><span>{{ wpm_min }} slower</span><span>faster {{ wpm_max }}</span></div>
+        <p class="muted small" id="speed-note"></p>
+        <p class="small speed-lock" id="speed-lock" hidden>Speed is locked while the dictation is in progress. Press <strong>Start again</strong> to change it.</p>
+      </div>
+
+      <div class="end-box" id="end-box" hidden>
+        <p>The dictation is finished. Reading starts in <strong id="end-count">5</strong> seconds.</p>
+        <div class="row">
+          <a class="btn btn-primary" id="go-now" href="{% url 'assignment_reading' assignment.pk %}">Go to reading now</a>
+          <button type="button" class="btn" id="listen-again">Start again</button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty">
+      <h3>This dictation has no audio</h3>
+      <p>Ask the admin to upload the audio file. You can still go on to the reading and typing steps.</p>
+      <a class="btn btn-primary" href="{% url 'assignment_reading' assignment.pk %}">Go to reading</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}{% load static %}<script src="{% static 'js/assignment.js' %}"></script>{% endblock %}

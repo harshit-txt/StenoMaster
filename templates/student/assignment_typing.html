@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Type - {{ assignment.display_title }} - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+{% block body_class %}typing-page{% endblock %}
+
+{% block content %}
+<div class="page">
+  {% comment %}
+    STEP 3 of 3. All the behaviour (timer, draft saving, auto-submit, confirm box) is in static/js/assignment.js.
+    data-remaining comes from the SERVER so refreshing the page does not restart the clock.
+  {% endcomment %}
+  <form method="post" action="{% url 'submit_assignment' assignment.pk %}" id="typing-form"
+        data-assignment="{{ assignment.pk }}"
+        data-attempt="{{ attempt_id }}"
+        data-remaining="{{ remaining_seconds }}"
+        data-total="{{ total_seconds }}">
+    {% csrf_token %}
+    <input type="hidden" name="wpm_used" id="wpm-used" value="{{ assignment.base_wpm }}">
+    <input type="hidden" name="client_seconds" id="client-seconds" value="0">
+
+    {# ---- top bar: title, countdown, word count, text size, submit ---- #}
+    <div class="typing-bar">
+      <div class="title">{{ assignment.display_title }}</div>
+      <div class="timer" id="timer" role="timer" aria-label="Time left">50:00</div>
+      <div class="typing-tools">
+        <span class="count"><span id="word-count">0</span> words</span>
+        <button type="button" class="btn btn-sm" id="size-down" aria-label="Smaller text">A-</button>
+        <button type="button" class="btn btn-sm" id="size-up" aria-label="Larger text">A+</button>
+        <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
+      </div>
+    </div>
+
+    <div class="time-warning" id="time-warning" role="alert">Two minutes left. Finish your last lines.</div>
+
+    {# ---- THE STENO PAD: pure white in light mode, pure black in dark mode (style.css, section 11) ---- #}
+    <label for="steno-pad" class="sr-only">Type the dictation here</label>
+    <textarea id="steno-pad" name="typed_text" class="steno-pad"
+              spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"
+              placeholder="Start typing here" autofocus></textarea>
+
+    <div class="pad-foot">
+      <span id="save-status">Your text is saved on this device as you type.</span>
+      <span>The timer keeps running if you refresh the page.</span>
+    </div>
+  </form>
+
+  {# ---- confirmation box shown before submitting ---- #}
+  <dialog id="submit-dialog" aria-labelledby="dialog-title">
+    <h2 id="dialog-title">Submit your assignment</h2>
+    <p id="submit-summary" class="muted"></p>
+    <div class="row">
+      <button type="button" class="btn" id="dialog-cancel">Keep typing</button>
+      <button type="button" class="btn btn-primary" id="dialog-confirm">Submit now</button>
+    </div>
+  </dialog>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% load static %}<script src="{% static 'js/assignment.js' %}"></script>{% endblock %}

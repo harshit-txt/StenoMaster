@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Read your notes - {{ assignment.display_title }} - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  {# STEP 2 of 3. Counts down READING_SECONDS (settings.py) then opens the typing page by itself. #}
+  <div class="flow-steps" aria-label="Steps"><span>1 Listen</span><span class="on">2 Read your notes</span><span>3 Type</span></div>
+
+  <div class="reading" id="reading" data-seconds="{{ reading_seconds }}" data-next-url="{% url 'assignment_typing' assignment.pk %}">
+    <h1>Read your notes</h1>
+    <p class="muted">Go over your shorthand. Typing starts when the timer reaches zero, or sooner if you press the button.</p>
+    <div class="big-timer" id="timer" role="timer">5:00</div>
+    <div class="bar"><i id="bar-fill"></i></div>
+    <a class="btn btn-primary btn-lg" href="{% url 'assignment_typing' assignment.pk %}">Start typing now</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% load static %}<script src="{% static 'js/assignment.js' %}"></script>{% endblock %}

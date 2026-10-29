@@ -1,0 +1,25 @@
+{% comment %}
+  _diff.html - the marked-up passage (used on the student result page and the owner's submission page).
+  Needs the variable "diff" (list of words made by core/checker.py).
+
+  What each word looks like:
+    correct        plain text
+    wrong word     what was TYPED struck through in red, the CORRECT word in a green box
+    spelling /
+    capital /
+    full stop      same, but struck through in amber (half mistake)
+    missing word   the passage word highlighted (the student left it out)
+    extra word     the typed word struck through in red (it is not in the passage)
+  Small marks after a word:  Aa = capital letter missing,  . = full stop missing / misplaced
+
+  Colours are in static/css/style.css (section 12).
+{% endcomment %}
+<div class="diff-text">
+{% for item in diff %}
+{% if item.s == 'correct' %}<span class="w">{{ item.o }}</span>
+{% elif item.s == 'missing' %}<span class="w d-missing"><span class="d-fix">{{ item.o }}</span></span>
+{% elif item.s == 'extra' %}<span class="w d-extra"><span class="d-typed">{{ item.t }}</span></span>
+{% else %}<span class="w d-{{ item.s }}"><span class="d-typed">{{ item.t }}</span><span class="d-fix">{{ item.o }}</span>{% for flag in item.f %}<sup class="d-flag">{% if flag == 'capital' %}Aa{% else %}.{% endif %}</sup>{% endfor %}</span>
+{% endif %}
+{% endfor %}
+</div>

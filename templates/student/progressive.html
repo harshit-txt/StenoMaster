@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Progressive - {{ SITE_NAME }}{% endblock %}
+{% block nav_practice %}is-active{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Progressive</h1>
+      <p>Build speed step by step. Start with the first set and move up as your accuracy improves.</p>
+    </div>
+    <a class="btn" href="{% url 'practice' %}">Back to practice</a>
+  </div>
+  {% include 'student/_assignment_list.html' with empty_title="No progressive dictations yet" %}
+</div>
+{% endblock %}
